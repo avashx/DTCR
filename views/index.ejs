@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Real-Time Bus Tracker</title>
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <style>
+        #map {
+            height: 100%;
+            width: 100%;
+        }
+        @import url('https://fonts.googleapis.com/css2?family=Karla:wght@200&family=Poppins:wght@200&display=swap');
+
+        body {
+            background-color: #e8e8e8;
+            color: white;
+            margin: -1%;
+            font-family: 'Karla', sans-serif;
+        }
+
+        .back {
+            background: linear-gradient(-45deg, #000000, #082e04, #76044e);
+            background-size: 400% 400%;
+            animation: gradient 15s ease infinite;
+            height: 550px;
+            overflow: hidden;
+        }
+
+        @keyframes gradient {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        a {
+            text-decoration: none;
+            color: white;
+        }
+
+        h2 {
+            font-weight: 100;
+        }
+
+        .sectop {
+            margin-top: 6px;
+            min-height: 300px;
+            margin: 1% 8%;
+            color: white;
+            overflow: hidden;
+        }
+
+        .intro {
+            margin-top: -2%;
+            color: white;
+            font-family: 'Poppins', sans-serif;
+            font-size: 24px;
+            font-weight: 280;
+            letter-spacing: 1px;
+        }
+
+        .box {
+            margin: auto;
+            padding-top: 10px;
+            padding-bottom: 20px;
+            margin-top: -20px;
+            margin-bottom: 15px;
+            background-color: white;
+            box-shadow: 5px 7px 12px black;
+            border-radius: 6%;
+            max-width: 90%;
+            min-height: 450px;
+            text-align: center;
+            color: black;
+            overflow: hidden;
+        }
+
+        .card {
+            width: 150px;
+            height: calc(11.7 * 150px / 9);
+            background-color: #2C7DFA;
+            align-items: center;
+            border-radius: 12px;
+            margin: 20px 5%;
+            text-align: center;
+            cursor: pointer;
+            overflow: hidden;
+            box-shadow: 5px 7px 12px #141F72;
+            display: inline-block;
+        }
+
+        .card:hover {
+            background-color: #0f36a5;
+            box-shadow: 10px 18px 15px #753a88;
+        }
+
+        .search {
+            width: 400px;
+            height: 40px;
+            padding: 0 1rem;
+            background: #e8e8e8;
+            border-radius: 2%;
+            transition: transform 0.1s ease-in-out;
+        }
+
+        .frm {
+            padding: 2% 2%;
+            border-radius: 2%;
+        }
+
+        .form {
+            height: 40px;
+            background: #fff;
+            font-size: 15px;
+            color: black;
+            padding-left: 10px;
+            margin: 2% 1%;
+            border: 1px solid #d9d9d9;
+        }
+
+        .btn, .btn1 {
+            margin: 2%;
+            font-size: 15px;
+            height: 40px;
+            padding: 0px 40px;
+            border: none;
+            border-radius: 5px;
+            background: #00d363;
+            color: white;
+        }
+
+        .btn:hover, .btn1:hover {
+            background: #f5f5f5;
+            color: #157efb;
+        }
+
+        .btn2 {
+            padding: 13px 45.5px;
+            border: solid 2px #444444;
+            border-radius: 47px;
+            text-align: center;
+            font-size: 14px;
+            transition: .4s;
+        }
+
+        .btn2:hover {
+            background-color: black;
+            color: white;
+        }
+
+        .sec2 {
+            margin: auto;
+            padding-top: 10px;
+            padding-bottom: 20px;
+            margin-top: 30px;
+            margin-bottom: 15px;
+            background-color: white;
+            border-radius: 1%;
+            max-width: 85%;
+            min-height: 350px;
+            text-align: center;
+            color: black;
+            overflow: hidden;
+            box-shadow: 5px 7px 12px #868B8E;
+        }
+
+        .pplr {
+            margin: 2%;
+            font-size: 15px;
+            height: 40px;
+            min-width: 15%;
+            padding: 5px 10px;
+            border: 1px solid #d5f3e2;
+            border-radius: 5px;
+            background: white;
+            color: #1a1a1a;
+        }
+
+        .search:hover, .search:focus, .pplr:hover {
+            background-color: black;
+            color: white;
+        }
+
+        .orange {
+            display: inline-block;
+            background: orange;
+            padding: 2px 6px;
+            font-size: 75%;
+            color: black;
+            font-weight: 700;
+            text-align: center;
+            border-radius: 25px;
+        }
+
+        .green {
+            display: inline-block;
+            background: green;
+            padding: 2px 6px;
+            color: white;
+            font-size: 75%;
+            font-weight: 700;
+            text-align: center;
+            border-radius: 25px;
+        }
+
+        .red {
+            display: inline-block;
+            background: red;
+            padding: 2px 6px;
+            font-size: 75%;
+            font-weight: 700;
+            color: white;
+            text-align: center;
+            border-radius: 25px;
+        }
+
+        .map-container {
+            width: 97%;
+            max-width: 800px;
+            height: 400px;
+            border-radius: 8px;
+            box-shadow: 5px 7px 12px black;
+            overflow: hidden;
+            transition: all 0.3s ease; /* Smooth transition for fullscreen */
+        }
+
+        .map-container.fullscreen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            max-width: none;
+            z-index: 9999;
+            border-radius: 0;
+        }
+
+        .bus-label {
+            background: rgba(255, 255, 255, 0.8);
+            border: 1px solid #333;
+            padding: 2px 5px;
+            font-size: 12px;
+            font-weight: bold;
+            text-align: center;
+            border-radius: 3px;
+            color: #000;
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body>
+    <section class="back">
+        <div class="sectop">
+            <br>
+            <h3><span class="intro">DTC TC </span><br>Government of NCT of Delhi</h3>
+            <center><div class="map-container"><div id="map"></div></center>
+        </div>
+    </section>
+
+    <section class="box">
+        <h2>Tracking</h2>
+        <br>
+        <div>
+            <a href="#rec" onclick="rec();"><input type="button" value="Attendance" class="btn1"></a>
+            <input type="button" value="Fullscreen Map" class="btn1" onclick="toggleFullscreen()">
+            <input type="button" value="BUS" class="btn1">
+        </div>
+        <br>
+        <form class="frm">
+            <input type="text" class="form" placeholder="eg.">
+            <select name="" id="" class="form">
+                <option value="">Category</option>
+                <option value="">TWO Time</option>
+                <option value="">ONE Time</option>
+            </select>
+            <select name="" id="" class="form">
+                <option value="">Location</option>
+                <option value="">Delhi</option>
+                <option value="">Noida</option>
+                <option value="">Chennai</option>
+                <option value="">Gurugram</option>
+                <option value="">Chandigarh</option>
+                <option value="">Mumbai</option>
+                <option value="">Bangalore</option>
+            </select>
+            <a href="https://avsjob.000webhostapp.com/job.php"><input type="submit" value="Search" class="btn"></a>
+        </form>
+        <h5><i>( or search for other services )</i></h5>
+        <input onclick="window.location.href='#pop'" type="submit" value="Submit" class="btn2">
+    </section>
+
+    <br>
+
+    <section>
+        <center>
+            <div class="card">
+                <p class="orange">0</p>
+                <br>
+            </div>
+            <div class="card">
+                <p class="green">1</p>
+                <br>
+            </div>
+            <div class="card">
+                <p class="red">2</p>
+                <br>
+            </div>
+            <div class="card">
+                <p class="orange">3</p>
+                <br>
+            </div>
+        </center>
+    </section>
+
+    <section id="pplr" class="sec2">
+        <h1><b>X</b></h1>
+        <br>
+        <input class="search" type="text" placeholder='Searchservice'>
+        <br><br>
+        <div>
+            <input type="button" class="pplr" href="" value="BUS issue">
+            <input type="button" class="pplr" href="" value="Report Breakdown">
+            <input type="button" class="pplr" href="" value="Report Fraud">
+            <input type="button" class="pplr" href="" value="Emergency">
+        </div>
+    </section>
+
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <!-- Socket.IO client library -->
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        // Initialize the map centered on Delhi
+        const map = L.map('map').setView([28.6139, 77.2090], 11);
+
+        // Add OpenStreetMap tiles
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
+
+        // Custom bus icon
+        const busIcon = L.icon({
+            iconUrl: '/bus-icon.png', // Local icon from public folder
+            iconSize: [35, 18],
+            iconAnchor: [16, 16],
+            popupAnchor: [0, -16]
+        });
+
+        // Object to store bus markers and labels
+        const busMarkers = {};
+
+        // Function to update bus markers with smooth animation
+        function updateBusMarkers(buses) {
+            Object.keys(busMarkers).forEach(busNo => {
+                if (!buses.find(bus => bus.busNo === busNo)) {
+                    map.removeLayer(busMarkers[busNo].marker);
+                    map.removeLayer(busMarkers[busNo].label);
+                    delete busMarkers[busNo];
+                }
+            });
+
+            buses.forEach(bus => {
+                const { busNo, latitude, longitude, routeNo } = bus;
+
+                if (busMarkers[busNo]) {
+                    const marker = busMarkers[busNo].marker;
+                    const label = busMarkers[busNo].label;
+                    const newLatLng = new L.LatLng(latitude, longitude);
+
+                    animateMarker(marker, marker.getLatLng(), newLatLng);
+                    label.setLatLng(newLatLng);
+                    marker.setPopupContent(`Bus: ${busNo}<br>Route: ${routeNo}<br>Lat: ${latitude}<br>Lon: ${longitude}`);
+                    label.getElement().innerHTML = routeNo;
+                } else {
+                    const marker = L.marker([latitude, longitude], { icon: busIcon })
+                        .addTo(map)
+                        .bindPopup(`Bus: ${busNo}<br>Route: ${routeNo}<br>Lat: ${latitude}<br>Lon: ${longitude}`);
+
+                    const label = L.marker([latitude, longitude], {
+                        icon: L.divIcon({
+                            className: 'bus-label',
+                            html: routeNo,
+                            iconSize: [1, 1],
+                            iconAnchor: [20, -5]
+                        })
+                    }).addTo(map);
+
+                    busMarkers[busNo] = { marker, label };
+                }
+            });
+        }
+
+        // Function to animate marker movement
+        function animateMarker(marker, startLatLng, endLatLng) {
+            let startTime = null;
+            const duration = 1000;
+
+            function animate(timestamp) {
+                if (!startTime) startTime = timestamp;
+                const progress = (timestamp - startTime) / duration;
+                if (progress < 1) {
+                    const lat = startLatLng.lat + (endLatLng.lat - startLatLng.lat) * progress;
+                    const lng = startLatLng.lng + (endLatLng.lng - startLatLng.lng) * progress;
+                    marker.setLatLng([lat, lng]);
+                    const label = busMarkers[marker._popup._content.split('<br>')[0].replace('Bus: ', '')].label;
+                    label.setLatLng([lat, lng]);
+                    requestAnimationFrame(animate);
+                } else {
+                    marker.setLatLng(endLatLng);
+                }
+            }
+            requestAnimationFrame(animate);
+        }
+
+        // Function to toggle fullscreen mode
+        function toggleFullscreen() {
+            const mapContainer = document.querySelector('.map-container');
+            if (!document.fullscreenElement) {
+                mapContainer.classList.add('fullscreen');
+                mapContainer.requestFullscreen().then(() => {
+                    map.invalidateSize(); // Recalculate map size
+                }).catch(err => {
+                    console.error('Fullscreen request failed:', err);
+                });
+            } else {
+                mapContainer.classList.remove('fullscreen');
+                document.exitFullscreen().then(() => {
+                    map.invalidateSize(); // Recalculate map size
+                }).catch(err => {
+                    console.error('Exit fullscreen failed:', err);
+                });
+            }
+        }
+
+        // Initial bus data from server
+        const initialBuses = <%- JSON.stringify(buses) %>;
+        updateBusMarkers(initialBuses);
+
+        // Connect to Socket.IO and listen for updates
+        const socket = io();
+        socket.on('busUpdate', (buses) => {
+            updateBusMarkers(buses);
+        });
+    </script>
+</body>
+</html>
