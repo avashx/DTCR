@@ -1,0 +1,27 @@
+{
+    "version": 2,
+    "builds": [
+        {
+            "src": "api/bus.js",
+            "use": "@vercel/node"
+        },
+        {
+            "src": "views/index.ejs",
+            "use": "@vercel/static"
+        },
+        {
+            "src": "public/**",
+            "use": "@vercel/static"
+        }
+    ],
+    "routes": [
+        {
+            "src": "/api/bus",
+            "dest": "/api/bus.js"
+        },
+        {
+            "src": "/(.*)",
+            "dest": "/views/index.ejs"
+        }
+    ]
+}
