@@ -4,7 +4,13 @@ const axios = require('axios');
 const protobuf = require('protobufjs');
 
 const server = http.createServer();
-const io = new Server(server);
+const io = socketIo(server, {
+    cors: {
+      origin: "https://dtcr.vercel.app", // Allow only your frontend domain
+      methods: ["GET", "POST"],
+    },
+  });
+  
 
 // Load GTFS proto
 const protoFile = 'gtfs-realtime.proto';
@@ -40,3 +46,5 @@ setInterval(fetchBusData, 1000);
 server.listen(3000, () => {
     console.log('Socket.IO server running on port 3000');
 });
+
+
