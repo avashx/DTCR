@@ -4,13 +4,7 @@ const axios = require('axios');
 const protobuf = require('protobufjs');
 
 const server = http.createServer();
-const io = socketIo(server, {
-    cors: {
-      origin: "https://dtcr.vercel.app", // Allow only your frontend domain
-      methods: ["GET", "POST"],
-    },
-  });
-  
+const io = new Server(server);
 
 // Load GTFS proto
 const protoFile = 'gtfs-realtime.proto';
